@@ -1,1 +1,7 @@
-INDEX VERSION 1.126+/Users/zmnatz/workspace/androidDevClass/.metadata/.plugins/org.eclipse.jdt.core
+INDEX VERSION 1.126+/Users/zmnatz/git/androidDevClass/.metadata/.plugins/org.eclipse.jdt.core
+69673868.index
+717838615.index
+930628701.index
+2331710140.index
+2361194845.index
+2926646759.index
