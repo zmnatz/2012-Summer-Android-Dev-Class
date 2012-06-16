@@ -1,11 +1,16 @@
 package mnatzakanian.zaven.hw2.beans;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Contact implements Parcelable {
+	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
+			"MM-dd-yyyy");
+	private long id;
 	private String displayName;
 	private String firstName;
 	private String lastName;
@@ -15,10 +20,11 @@ public class Contact implements Parcelable {
 	private String mobilePhone;
 	private String emailAddress;
 
-	public Contact(String displayName, String firstName, String lastName,
-			Date birthday, String homePhone, String workPhone,
+	public Contact(long id, String displayName, String firstName,
+			String lastName, Date birthday, String homePhone, String workPhone,
 			String mobilePhone, String emailAddress) {
 		super();
+		this.id = id;
 		this.displayName = displayName;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -93,6 +99,11 @@ public class Contact implements Parcelable {
 		this.birthday = birthday;
 	}
 
+	public void setBirthday(String date) throws ParseException {
+		setBirthday((date == null || date.length() < 1) ? null : FORMATTER
+				.parse(date));
+	}
+
 	/**
 	 * @return the homePhone
 	 */
@@ -160,31 +171,61 @@ public class Contact implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(id);
+		dest.writeString(displayName);
 		dest.writeString(firstName);
 		dest.writeString(lastName);
-		dest.writeString(displayName);
-		dest.writeString(birthday.toString());
+		dest.writeString(getBirthdayString());
 		dest.writeString(homePhone);
 		dest.writeString(workPhone);
 		dest.writeString(mobilePhone);
 		dest.writeString(emailAddress);
 	}
 
-	public static Parcelable.Creator<Contact> CREATOR = new Creator<Contact>() {
+	public String getBirthdayString() {
+		return birthday != null ? FORMATTER.format(birthday) : "";
+	}
 
+	/**
+	 * @return the id
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public static Date parseDate(String dateString) {
+		Date birthday = null;
+		try {
+			birthday = dateString.length() > 0 ? FORMATTER.parse(dateString)
+					: null;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return birthday;
+	}
+
+	public static Parcelable.Creator<Contact> CREATOR = new Creator<Contact>() {
 		@Override
 		public Contact createFromParcel(Parcel source) {
+			long id = source.readLong();
+			String displayName = source.readString();
 			String firstName = source.readString();
 			String lastName = source.readString();
-			String displayName = source.readString();
-			String dateString = source.readString();
-			Date birthday = dateString.length() > 0 ? new Date(dateString)
-					: null;
+			Date birthday = parseDate(source.readString());
 			String homePhone = source.readString();
 			String workPhone = source.readString();
 			String mobilePhone = source.readString();
 			String email = source.readString();
-			return new Contact(firstName, lastName, displayName, birthday,
+
+			return new Contact(id, displayName, firstName, lastName, birthday,
 					homePhone, workPhone, mobilePhone, email);
 		}
 

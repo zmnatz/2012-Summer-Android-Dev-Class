@@ -5,28 +5,38 @@ import java.util.List;
 
 import mnatzakanian.zaven.hw2.beans.Contact;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.DataSetObserver;
+import android.database.CursorJoiner.Result;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class ContactsActivity extends ListActivity {
-	private static final String CONTACT_PARAM = "contact";
+	/**  **/
+	private static final int EDIT_CONTACT_REQUEST_ID = 41;
 
-	private List<Contact> contacts = new ArrayList<Contact>();
-	private ContactList contactList;
-	private Contact contact;
+	/**  **/
+	private static final int DISPLAY_CONTACT_REQUEST_ID = 40;
+
+	public static final String CONTACT_PARAM = "contact";
+
+	private ArrayList<Contact> contacts = new ArrayList<Contact>();
+	private ContactList contactList = new ContactList();
 
 	private class ContactList implements ListAdapter {
 		private List<DataSetObserver> dataSetObservers = new ArrayList<DataSetObserver>();
 
 		@Override
-		public Contact getItem(int arg0) {
-			return contacts.get(arg0);
+		public Contact getItem(int index) {
+			return contacts.get(index);
 		}
 
 		@Override
@@ -111,23 +121,25 @@ public class ContactsActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		contactList = new ContactList();
 		setListAdapter(contactList);
 
+		if (savedInstanceState != null) {
+			this.contacts = savedInstanceState
+					.getParcelableArrayList(CONTACT_PARAM);
+		}
+		if (contacts.isEmpty())
+			Toast.makeText(getApplicationContext(), R.string.empty_list_label,
+					Toast.LENGTH_SHORT).show();
 		Contact contact = new Contact();
-		contact.setDisplayName("Name");
-		contact.setMobilePhone("Phone");
+		contact.setDisplayName("NAME1");
+		contact.setMobilePhone("PHONE1");
 		addContact(contact);
-
-		contact = null;
-		if (savedInstanceState != null)
-			contact = savedInstanceState.getParcelable(CONTACT_PARAM);
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable(CONTACT_PARAM, contact);
+		outState.putParcelableArrayList(CONTACT_PARAM, contacts);
 	}
 
 	public boolean addContact(Contact contact) {
@@ -142,11 +154,52 @@ public class ContactsActivity extends ListActivity {
 		return removed;
 	}
 
+	public void updateContact(Contact contact) {
+		contacts.set((int) contact.getId(), contact);
+		contactList.refresh();
+	}
+
 	@Override
-	public boolean onPreparePanel(int featureId, View view, Menu menu) {
-		Toast.makeText(getApplicationContext(), "Sending Person",
-				Toast.LENGTH_SHORT).show();
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Intent displayContact = new Intent(
+				"mnatzakanian.zaven.hw2.intents.viewContact");
+		displayContact.putExtra(CONTACT_PARAM, contactList.getItem(position));
+		startActivityForResult(displayContact, DISPLAY_CONTACT_REQUEST_ID);
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.createItem:
+			Intent intent = new Intent(getApplicationContext(),
+					EditContactActivity.class);
+			startActivityForResult(intent, EDIT_CONTACT_REQUEST_ID);
+			return true;
+		default:
+			return super.onMenuItemSelected(featureId, item);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.contact_list_menu, menu);
 		return true;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case DISPLAY_CONTACT_REQUEST_ID:
+			if (RESULT_OK == resultCode && data.hasExtra(CONTACT_PARAM))
+				updateContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
+			break;
+		case EDIT_CONTACT_REQUEST_ID:
+			if (RESULT_OK == resultCode)
+				addContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
+			break;
+		default:
+			super.onActivityResult(requestCode, resultCode, data);
+		}
 	}
 
 }
