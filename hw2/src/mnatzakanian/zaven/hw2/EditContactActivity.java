@@ -24,7 +24,7 @@ import android.widget.TextView;
 public class EditContactActivity extends Activity {
 	private static final int BIRTHDAY_PICKER_ID = 0;
 
-	private Contact contact;
+	private Contact workingContact;
 
 	private EditText mobileNumber;
 	private EditText firstName;
@@ -38,10 +38,8 @@ public class EditContactActivity extends Activity {
 	// Code Source: Android Developer Guide (developer.android.com)
 	private final OnDateSetListener birthdayListener = new OnDateSetListener() {
 		@Override
-		public void onDateSet(DatePicker view, int year, int monthOfYear,
-				int dayOfMonth) {
-			birthday.setText(FORMATTER.format(new Date(year, monthOfYear,
-					dayOfMonth)));
+		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+			birthday.setText(FORMATTER.format(new Date(year, monthOfYear, dayOfMonth)));
 		}
 	};
 
@@ -51,37 +49,20 @@ public class EditContactActivity extends Activity {
 		setContentView(R.layout.contact_edit);
 
 		initializeFormElements();
+
 		if (savedInstanceState != null)
-			contact = savedInstanceState.getParcelable(CONTACT_PARAM);
+			workingContact = savedInstanceState.getParcelable(CONTACT_PARAM);
 		else if (getIntent().hasExtra(CONTACT_PARAM))
-			contact = getIntent().getParcelableExtra(CONTACT_PARAM);
+			workingContact = getIntent().getParcelableExtra(CONTACT_PARAM);
 		else
-			contact = new Contact();
+			workingContact = new Contact();
 
-		displayContact(contact);
-
-		// Setup Buttons
-		Button save = (Button) findViewById(R.id.submitButton);
-		save.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				saveContact();
-				Intent results = new Intent();
-				results.putExtra(CONTACT_PARAM, contact);
-				setResult(RESULT_OK, results);
-				finish();
-			}
-		});
-		Button cancel = (Button) findViewById(R.id.cancelButton);
-		cancel.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				setResult(RESULT_CANCELED);
-				finish();
-			}
-		});
+		displayContact(workingContact);
 	}
 
+	/**
+	 * Retrieve all the form objects from the layout xml
+	 */
 	private void initializeFormElements() {
 		firstName = (EditText) findViewById(R.id.firstName);
 		lastName = (EditText) findViewById(R.id.lastName);
@@ -97,6 +78,26 @@ public class EditContactActivity extends Activity {
 		homeNumber = (EditText) findViewById(R.id.homeNumber);
 		workNumber = (EditText) findViewById(R.id.workNumber);
 		emailAddr = (EditText) findViewById(R.id.emailAddr);
+
+		// Setup Buttons
+		Button save = (Button) findViewById(R.id.submitButton);
+		save.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent results = new Intent();
+				results.putExtra(CONTACT_PARAM, saveContact());
+				setResult(RESULT_OK, results);
+				finish();
+			}
+		});
+		Button cancel = (Button) findViewById(R.id.cancelButton);
+		cancel.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				setResult(RESULT_CANCELED);
+				finish();
+			}
+		});
 	}
 
 	private void displayContact(Contact contact) {
@@ -116,7 +117,7 @@ public class EditContactActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelable(CONTACT_PARAM, contact);
+		outState.putParcelable(CONTACT_PARAM, workingContact);
 	}
 
 	/**
@@ -125,29 +126,29 @@ public class EditContactActivity extends Activity {
 	 * @return Contact object
 	 */
 	private Contact saveContact() {
-		contact.setFirstName(firstName.getText().toString());
-		contact.setLastName(lastName.getText().toString());
-		contact.setDisplayName(displayName.getText().toString());
+		workingContact.setFirstName(firstName.getText().toString());
+		workingContact.setLastName(lastName.getText().toString());
+		workingContact.setDisplayName(displayName.getText().toString());
 		if (!birthday.getText().toString().equals(R.string.set_birthday)) {
 			try {
-				contact.setBirthday(birthday.getText().toString());
+				workingContact.setBirthday(birthday.getText().toString());
 			} catch (ParseException e) {
 			}
 		}
-		contact.setMobilePhone(mobileNumber.getText().toString());
-		contact.setHomePhone(homeNumber.getText().toString());
-		contact.setWorkPhone(workNumber.getText().toString());
-		contact.setEmailAddress(emailAddr.getText().toString());
-		return contact;
+		workingContact.setMobilePhone(mobileNumber.getText().toString());
+		workingContact.setHomePhone(homeNumber.getText().toString());
+		workingContact.setWorkPhone(workNumber.getText().toString());
+		workingContact.setEmailAddress(emailAddr.getText().toString());
+		return workingContact;
 	}
 
+	// Code Source: Android Developer Guide (developer.android.com)
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case BIRTHDAY_PICKER_ID:
 			Calendar c = Calendar.getInstance();
-			return new DatePickerDialog(this, birthdayListener,
-					c.get(Calendar.YEAR), c.get(Calendar.MONTH),
+			return new DatePickerDialog(this, birthdayListener, c.get(Calendar.YEAR), c.get(Calendar.MONTH),
 					c.get(Calendar.DAY_OF_MONTH));
 		}
 		return null;

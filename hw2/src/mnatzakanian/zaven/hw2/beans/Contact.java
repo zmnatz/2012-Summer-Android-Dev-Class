@@ -8,8 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Contact implements Parcelable {
-	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
-			"MM-dd-yy");
+	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("MM-dd-yy");
 	private long id;
 	private String displayName;
 	private String firstName;
@@ -20,9 +19,8 @@ public class Contact implements Parcelable {
 	private String mobilePhone;
 	private String emailAddress;
 
-	public Contact(long id, String displayName, String firstName,
-			String lastName, Date birthday, String homePhone, String workPhone,
-			String mobilePhone, String emailAddress) {
+	public Contact(long id, String displayName, String firstName, String lastName, Date birthday, String homePhone,
+			String workPhone, String mobilePhone, String emailAddress) {
 		super();
 		this.id = id;
 		this.displayName = displayName;
@@ -100,8 +98,7 @@ public class Contact implements Parcelable {
 	}
 
 	public void setBirthday(String date) throws ParseException {
-		setBirthday((date == null || date.length() < 1) ? null : FORMATTER
-				.parse(date));
+		setBirthday((date == null || date.length() < 1) ? null : FORMATTER.parse(date));
 	}
 
 	/**
@@ -204,8 +201,7 @@ public class Contact implements Parcelable {
 	public static Date parseDate(String dateString) {
 		Date birthday = null;
 		try {
-			birthday = dateString.length() > 0 ? FORMATTER.parse(dateString)
-					: null;
+			birthday = dateString.length() > 0 ? FORMATTER.parse(dateString) : null;
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -225,8 +221,7 @@ public class Contact implements Parcelable {
 			String mobilePhone = source.readString();
 			String email = source.readString();
 
-			return new Contact(id, displayName, firstName, lastName, birthday,
-					homePhone, workPhone, mobilePhone, email);
+			return new Contact(id, displayName, firstName, lastName, birthday, homePhone, workPhone, mobilePhone, email);
 		}
 
 		@Override
