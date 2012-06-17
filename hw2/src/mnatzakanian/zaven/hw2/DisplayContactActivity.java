@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class DisplayContactActivity extends Activity {
-	/**  **/
 	private static final int EDIT_CONTACT_REQUEST = 43;
 	private Contact workingContact;
 
@@ -63,7 +62,7 @@ public class DisplayContactActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (RESULT_OK == resultCode || EDIT_CONTACT_REQUEST == requestCode) {
+		if (RESULT_OK == resultCode && EDIT_CONTACT_REQUEST == requestCode) {
 			workingContact = data.getParcelableExtra(CONTACT_PARAM);
 			displayContact(workingContact);
 

@@ -7,6 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:baselineAligned="false"
         android:orientation="horizontal" >
 
         <LinearLayout
@@ -24,27 +25,27 @@
                     android:id="@+id/lastName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@string/largeText" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/nameSeparator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/comma"
-                    android:textAppearance="@string/largeText" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/firstName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@string/largeText" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/displayName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -55,26 +56,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/born_label"
-                    android:textAppearance="@string/largeText" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
                     android:id="@+id/birthday"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@string/largeText" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/email_label"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/emailAddr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
 
         <LinearLayout
@@ -87,44 +88,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/phone_label"
-                android:textAppearance="@string/largeText"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/home_phone_label"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/homeNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/work_phone_label"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/workNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/mobile_phone_label"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
                 android:id="@+id/mobileNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@string/largeText" />
+                android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>
 

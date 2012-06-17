@@ -7,9 +7,7 @@ import mnatzakanian.zaven.hw2.beans.Contact;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.database.CursorJoiner.Result;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,19 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ContactsActivity extends ListActivity {
-	/**  **/
 	private static final int EDIT_CONTACT_REQUEST_ID = 41;
 
-	/**  **/
 	private static final int DISPLAY_CONTACT_REQUEST_ID = 40;
 
 	public static final String CONTACT_PARAM = "contact";
 
 	private ArrayList<Contact> contacts = new ArrayList<Contact>();
-	private ContactList contactList = new ContactList();
+	private final ContactList contactList = new ContactList();
 
 	private class ContactList implements ListAdapter {
-		private List<DataSetObserver> dataSetObservers = new ArrayList<DataSetObserver>();
+		private final List<DataSetObserver> dataSetObservers = new ArrayList<DataSetObserver>();
 
 		@Override
 		public Contact getItem(int index) {
@@ -127,13 +123,10 @@ public class ContactsActivity extends ListActivity {
 			this.contacts = savedInstanceState
 					.getParcelableArrayList(CONTACT_PARAM);
 		}
+
 		if (contacts.isEmpty())
 			Toast.makeText(getApplicationContext(), R.string.empty_list_label,
 					Toast.LENGTH_SHORT).show();
-		Contact contact = new Contact();
-		contact.setDisplayName("NAME1");
-		contact.setMobilePhone("PHONE1");
-		addContact(contact);
 	}
 
 	@Override
@@ -143,6 +136,7 @@ public class ContactsActivity extends ListActivity {
 	}
 
 	public boolean addContact(Contact contact) {
+		contact.setId(contacts.size());
 		boolean success = contacts.add(contact);
 		contactList.refresh();
 		return success;
@@ -188,18 +182,17 @@ public class ContactsActivity extends ListActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-		case DISPLAY_CONTACT_REQUEST_ID:
-			if (RESULT_OK == resultCode && data.hasExtra(CONTACT_PARAM))
+		if (RESULT_OK == resultCode) {
+			switch (requestCode) {
+			case DISPLAY_CONTACT_REQUEST_ID:
 				updateContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
-			break;
-		case EDIT_CONTACT_REQUEST_ID:
-			if (RESULT_OK == resultCode)
+				break;
+			case EDIT_CONTACT_REQUEST_ID:
 				addContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
-			break;
-		default:
-			super.onActivityResult(requestCode, resultCode, data);
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+			}
 		}
 	}
-
 }

@@ -9,7 +9,7 @@ import android.os.Parcelable;
 
 public class Contact implements Parcelable {
 	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
-			"MM-dd-yyyy");
+			"MM-dd-yy");
 	private long id;
 	private String displayName;
 	private String firstName;
