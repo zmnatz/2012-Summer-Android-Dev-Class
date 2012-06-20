@@ -161,12 +161,12 @@ public class Contact implements Parcelable {
 		this.emailAddress = emailAddress;
 	}
 
-	@Override
+	
 	public int describeContents() {
 		return 0;
 	}
 
-	@Override
+	
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(id);
 		dest.writeString(displayName);
@@ -209,7 +209,6 @@ public class Contact implements Parcelable {
 	}
 
 	public static Parcelable.Creator<Contact> CREATOR = new Creator<Contact>() {
-		@Override
 		public Contact createFromParcel(Parcel source) {
 			long id = source.readLong();
 			String displayName = source.readString();
@@ -224,7 +223,6 @@ public class Contact implements Parcelable {
 			return new Contact(id, displayName, firstName, lastName, birthday, homePhone, workPhone, mobilePhone, email);
 		}
 
-		@Override
 		public Contact[] newArray(int size) {
 			return new Contact[size];
 		}

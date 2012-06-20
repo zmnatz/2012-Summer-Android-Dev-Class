@@ -1,18 +1,16 @@
 package mnatzakanian.zaven.hw3;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import mnatzakanian.zaven.hw3.beans.Contact;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,26 +24,21 @@ public class ContactsActivity extends ListActivity {
 
 	private final ContactList contactList = new ContactList();
 
-	public class ContactList implements ListAdapter {
+	private class ContactList extends BaseAdapter {
 		public ArrayList<Contact> contacts = new ArrayList<Contact>();
-		private final List<DataSetObserver> dataSetObservers = new ArrayList<DataSetObserver>();
-
-		@Override
-		public Contact getItem(int index) {
-			return contacts.get(index);
+		
+		public int getCount() {
+			return contacts.size();
 		}
 
-		@Override
-		public long getItemId(int itemNumber) {
-			return itemNumber;
+		public Contact getItem(int arg0) {
+			return contacts.get(arg0);
 		}
 
-		@Override
-		public int getItemViewType(int itemId) {
-			return 0;
+		public long getItemId(int arg0) {
+			return arg0;
 		}
 
-		@Override
 		public View getView(int itemNum, View view, ViewGroup parentGroup) {
 			Contact contact = getItem(itemNum);
 			if (view == null) {
@@ -57,73 +50,20 @@ public class ContactsActivity extends ListActivity {
 			phoneView.setText(contact.getMobilePhone());
 			return view;
 		}
-
-		@Override
-		public int getViewTypeCount() {
-			return 1;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return contacts.isEmpty();
-		}
-
-		@Override
-		public boolean areAllItemsEnabled() {
-			for (int i = 0; i < contacts.size(); i++) {
-				if (!isEnabled(i))
-					return false;
-			}
-			return true;
-		}
-
-		@Override
-		public boolean isEnabled(int position) {
-			return true;
-		}
-
-		@Override
-		public int getCount() {
-			return contacts.size();
-		}
-
-		/** Code provided by Stanchfield on Sakai **/
-		@Override
-		public void registerDataSetObserver(DataSetObserver observer) {
-			dataSetObservers.add(observer);
-		}
-
-		@Override
-		public void unregisterDataSetObserver(DataSetObserver observer) {
-			dataSetObservers.remove(observer);
-		}
-
-		public void refresh() {
-			for (DataSetObserver observer : dataSetObservers) {
-				observer.onChanged();
-			}
-		}
-
-		/** End Stanchfield Code **/
-
+		
 		public boolean addContact(Contact contact) {
 			contact.setId(contacts.size());
 			boolean success = contacts.add(contact);
-			refresh();
+			notifyDataSetChanged();
 			return success;
 		}
 
 		public void updateContact(Contact contact) {
 			long index = contact.getId();
-			if (contacts.size() > index) {
+			if(index == 0)
+				
 				contacts.set((int) index, contact);
-				refresh();
-			}
+				notifyDataSetChanged();
 		}
 	}
 

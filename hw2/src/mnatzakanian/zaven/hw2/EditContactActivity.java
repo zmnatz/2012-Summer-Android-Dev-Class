@@ -37,13 +37,12 @@ public class EditContactActivity extends Activity {
 
 	// Code Source: Android Developer Guide (developer.android.com)
 	private final OnDateSetListener birthdayListener = new OnDateSetListener() {
-		@Override
+		
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 			birthday.setText(FORMATTER.format(new Date(year, monthOfYear, dayOfMonth)));
 		}
 	};
 
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.contact_edit);
@@ -69,7 +68,7 @@ public class EditContactActivity extends Activity {
 		displayName = (EditText) findViewById(R.id.displayName);
 		birthday = (TextView) findViewById(R.id.birthday);
 		birthday.setOnClickListener(new OnClickListener() {
-			@Override
+			
 			public void onClick(View view) {
 				showDialog(BIRTHDAY_PICKER_ID);
 			}
@@ -82,7 +81,7 @@ public class EditContactActivity extends Activity {
 		// Setup Buttons
 		Button save = (Button) findViewById(R.id.submitButton);
 		save.setOnClickListener(new OnClickListener() {
-			@Override
+			
 			public void onClick(View v) {
 				Intent results = new Intent();
 				results.putExtra(CONTACT_PARAM, saveContact());
@@ -92,7 +91,7 @@ public class EditContactActivity extends Activity {
 		});
 		Button cancel = (Button) findViewById(R.id.cancelButton);
 		cancel.setOnClickListener(new OnClickListener() {
-			@Override
+			
 			public void onClick(View v) {
 				setResult(RESULT_CANCELED);
 				finish();
@@ -114,7 +113,7 @@ public class EditContactActivity extends Activity {
 		emailAddr.setText(contact.getEmailAddress());
 	}
 
-	@Override
+	
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putParcelable(CONTACT_PARAM, workingContact);
@@ -143,7 +142,7 @@ public class EditContactActivity extends Activity {
 	}
 
 	// Code Source: Android Developer Guide (developer.android.com)
-	@Override
+	
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case BIRTHDAY_PICKER_ID:

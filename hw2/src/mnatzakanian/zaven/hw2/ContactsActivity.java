@@ -30,22 +30,22 @@ public class ContactsActivity extends ListActivity {
 		public ArrayList<Contact> contacts = new ArrayList<Contact>();
 		private final List<DataSetObserver> dataSetObservers = new ArrayList<DataSetObserver>();
 
-		@Override
+		
 		public Contact getItem(int index) {
 			return contacts.get(index);
 		}
 
-		@Override
+		
 		public long getItemId(int itemNumber) {
 			return itemNumber;
 		}
 
-		@Override
+		
 		public int getItemViewType(int itemId) {
 			return 0;
 		}
 
-		@Override
+		
 		public View getView(int itemNum, View view, ViewGroup parentGroup) {
 			Contact contact = getItem(itemNum);
 			if (view == null) {
@@ -58,22 +58,22 @@ public class ContactsActivity extends ListActivity {
 			return view;
 		}
 
-		@Override
+		
 		public int getViewTypeCount() {
 			return 1;
 		}
 
-		@Override
+		
 		public boolean hasStableIds() {
 			return true;
 		}
 
-		@Override
+		
 		public boolean isEmpty() {
 			return contacts.isEmpty();
 		}
 
-		@Override
+		
 		public boolean areAllItemsEnabled() {
 			for (int i = 0; i < contacts.size(); i++) {
 				if (!isEnabled(i))
@@ -82,23 +82,23 @@ public class ContactsActivity extends ListActivity {
 			return true;
 		}
 
-		@Override
+		
 		public boolean isEnabled(int position) {
 			return true;
 		}
 
-		@Override
+		
 		public int getCount() {
 			return contacts.size();
 		}
 
 		/** Code provided by Stanchfield on Sakai **/
-		@Override
+		
 		public void registerDataSetObserver(DataSetObserver observer) {
 			dataSetObservers.add(observer);
 		}
 
-		@Override
+		
 		public void unregisterDataSetObserver(DataSetObserver observer) {
 			dataSetObservers.remove(observer);
 		}
@@ -128,7 +128,7 @@ public class ContactsActivity extends ListActivity {
 	}
 
 	/** Called when the activity is first created. */
-	@Override
+	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setListAdapter(contactList);
@@ -140,26 +140,26 @@ public class ContactsActivity extends ListActivity {
 			Toast.makeText(getApplicationContext(), R.string.empty_list_label, Toast.LENGTH_SHORT).show();
 	}
 
-	@Override
+	
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putParcelableArrayList(CONTACT_PARAM, contactList.contacts);
 	}
 
-	@Override
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.contact_list_menu, menu);
 		return true;
 	}
 
-	@Override
+	
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent displayContact = new Intent("mnatzakanian.zaven.hw2.intents.viewContact");
 		displayContact.putExtra(CONTACT_PARAM, contactList.getItem(position));
 		startActivityForResult(displayContact, DISPLAY_CONTACT_REQUEST_ID);
 	}
 
-	@Override
+	
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.createItem:
@@ -171,7 +171,7 @@ public class ContactsActivity extends ListActivity {
 		}
 	}
 
-	@Override
+	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (RESULT_OK == resultCode) {
 			switch (requestCode) {
