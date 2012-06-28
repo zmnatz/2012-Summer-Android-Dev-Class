@@ -51,9 +51,10 @@ public class EditContactActivity extends Activity {
 
 		if (savedInstanceState != null)
 			workingContact = savedInstanceState.getParcelable(CONTACT_PARAM);
-		else if (getIntent().hasExtra(CONTACT_PARAM))
-			workingContact = getIntent().getParcelableExtra(CONTACT_PARAM);
-		else
+		else if (getIntent().hasExtra(CONTACT_PARAM)) {
+			workingContact = new Contact();
+			//TODO: Load Contact from ID
+		} else
 			workingContact = new Contact();
 
 		displayContact(workingContact);
@@ -118,10 +119,8 @@ public class EditContactActivity extends Activity {
 
 	/**
 	 * Save form data to the contact object
-	 * 
-	 * @return Contact object
 	 */
-	private Contact saveContact() {
+	private long saveContact() {
 		workingContact.setFirstName(firstName.getText().toString());
 		workingContact.setLastName(lastName.getText().toString());
 		workingContact.setDisplayName(displayName.getText().toString());
@@ -135,7 +134,7 @@ public class EditContactActivity extends Activity {
 		workingContact.setHomePhone(homeNumber.getText().toString());
 		workingContact.setWorkPhone(workNumber.getText().toString());
 		workingContact.setEmailAddress(emailAddr.getText().toString());
-		return workingContact;
+		return workingContact.getId();
 	}
 
 	// Code Source: Android Developer Guide (developer.android.com)

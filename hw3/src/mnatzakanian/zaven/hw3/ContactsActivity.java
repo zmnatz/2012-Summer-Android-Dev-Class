@@ -36,7 +36,7 @@ public class ContactsActivity extends ListActivity {
 		}
 
 		public long getItemId(int arg0) {
-			return arg0;
+			return getItem(arg0).getId();
 		}
 
 		public View getView(int itemNum, View view, ViewGroup parentGroup) {
@@ -73,17 +73,10 @@ public class ContactsActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setListAdapter(contactList);
 
-		if (savedInstanceState != null)
-			contactList.contacts = savedInstanceState.getParcelableArrayList(CONTACT_PARAM);
-
+		//TODO: Load contacts
+		
 		if (contactList.isEmpty())
 			Toast.makeText(getApplicationContext(), R.string.empty_list_label, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putParcelableArrayList(CONTACT_PARAM, contactList.contacts);
 	}
 
 	@Override
@@ -95,7 +88,7 @@ public class ContactsActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent displayContact = new Intent("mnatzakanian.zaven.hw2.intents.viewContact");
-		displayContact.putExtra(CONTACT_PARAM, contactList.getItem(position));
+		displayContact.putExtra(CONTACT_PARAM, id);
 		startActivityForResult(displayContact, DISPLAY_CONTACT_REQUEST_ID);
 	}
 
@@ -108,22 +101,6 @@ public class ContactsActivity extends ListActivity {
 			return true;
 		default:
 			return super.onMenuItemSelected(featureId, item);
-		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (RESULT_OK == resultCode) {
-			switch (requestCode) {
-			case DISPLAY_CONTACT_REQUEST_ID:
-				contactList.updateContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
-				break;
-			case EDIT_CONTACT_REQUEST_ID:
-				contactList.addContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
-				break;
-			default:
-				super.onActivityResult(requestCode, resultCode, data);
-			}
 		}
 	}
 }

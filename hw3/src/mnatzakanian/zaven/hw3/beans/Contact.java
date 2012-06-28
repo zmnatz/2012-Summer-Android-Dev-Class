@@ -4,10 +4,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Contact implements Parcelable {
+	public static final String ID = "_id";
+	public static final String DISPLAY_NAME = "displayName";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String BIRTHDAY = "birthday";
+	public static final String HOME_PHONE = "homePhone";
+	public static final String WORK_PHONE = "workPhone";
+	public static final String MOBILE_PHONE = "mobilePhone";
+	public static final String EMAIL_ADDRESS = "emailAddress";
+
+	public static final String[] ALL_FIELDS = new String[] { ID, DISPLAY_NAME, FIRST_NAME, LAST_NAME, BIRTHDAY, HOME_PHONE,
+			WORK_PHONE, MOBILE_PHONE, EMAIL_ADDRESS };
+	public static final String IDENTIFIER_STRING = ID + "=?";
+	public static final String SORT_FIELD = DISPLAY_NAME;
+
 	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("MM-dd-yy");
 	private long id;
 	private String displayName;
@@ -33,8 +50,19 @@ public class Contact implements Parcelable {
 		this.emailAddress = emailAddress;
 	}
 
+	public Contact(Cursor cursor) {
+		this(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), Contact.parseDate(cursor
+				.getString(4)), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8));
+	}
+
 	public Contact() {
 
+	}
+
+	public Contact(long id, ContentValues values) {
+		this(id, values.getAsString(DISPLAY_NAME), values.getAsString(FIRST_NAME), values.getAsString(LAST_NAME),
+				parseDate(values.getAsString(BIRTHDAY)), values.getAsString(HOME_PHONE), values.getAsString(WORK_PHONE),
+				values.getAsString(MOBILE_PHONE), values.getAsString(EMAIL_ADDRESS));
 	}
 
 	/**
@@ -225,4 +253,22 @@ public class Contact implements Parcelable {
 			return new Contact[size];
 		}
 	};
+
+	public String[] getIdentifyingValues() {
+		return new String[] { Long.toString(id) };
+	}
+
+	public ContentValues getContentValues() {
+		ContentValues content = new ContentValues();
+		content.put(ID, id);
+		content.put(DISPLAY_NAME, displayName);
+		content.put(FIRST_NAME, firstName);
+		content.put(LAST_NAME, lastName);
+		content.put(BIRTHDAY, getBirthdayString());
+		content.put(HOME_PHONE, homePhone);
+		content.put(WORK_PHONE, workPhone);
+		content.put(MOBILE_PHONE, mobilePhone);
+		content.put(EMAIL_ADDRESS, emailAddress);
+		return content;
+	}
 }

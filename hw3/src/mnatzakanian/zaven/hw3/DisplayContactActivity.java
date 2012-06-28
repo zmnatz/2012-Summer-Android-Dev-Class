@@ -48,7 +48,7 @@ public class DisplayContactActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.editItem:
 			Intent edit = new Intent(getApplicationContext(), EditContactActivity.class);
-			edit.putExtra(CONTACT_PARAM, workingContact);
+			edit.putExtra(CONTACT_PARAM, workingContact.getId());
 			startActivityForResult(edit, EDIT_CONTACT_REQUEST);
 			return true;
 		default:
@@ -62,7 +62,7 @@ public class DisplayContactActivity extends Activity {
 			setViewContact((Contact) data.getParcelableExtra(CONTACT_PARAM));
 
 			Intent results = new Intent();
-			results.putExtra(CONTACT_PARAM, workingContact);
+			results.putExtra(CONTACT_PARAM, workingContact.getId());
 			setResult(RESULT_OK, results);
 		} else
 			super.onActivityResult(requestCode, resultCode, data);
