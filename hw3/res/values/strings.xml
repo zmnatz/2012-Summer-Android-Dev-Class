@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Contacts</string>
     <string name="first_name_label">First Name</string>
     <string name="last_name_label">Last Name</string>
@@ -20,5 +19,4 @@
     <string name="create_contact_label">Create Contact</string>
     <string name="set_birthday">Click Here to Set Birthday</string>
     <string name="personal_info">Personal Info</string>
-
 </resources>

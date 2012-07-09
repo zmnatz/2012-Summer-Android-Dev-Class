@@ -20,9 +20,9 @@ public class ContactDataManager {
 	public static final String DATABASE_IDENTIFIER = "CONTACT_MANAGER";
 	public static final String CONTACT_TABLE = "contacts";
 
-	private OpenHelper openHelper;
+	private final OpenHelper openHelper;
 
-	private SQLiteDatabase db;
+	private final SQLiteDatabase db;
 
 	public ContactDataManager(Context context) {
 		openHelper = new OpenHelper(context);
@@ -34,41 +34,50 @@ public class ContactDataManager {
 		openHelper.close();
 	}
 
-	public Contact create(Contact contact) {
-		long id = db.insert(CONTACT_TABLE, null, contact.getContentValues());
+	public Contact create(ContentValues contentValues) {
+		long id = db.insert(CONTACT_TABLE, null, contentValues);
+		Contact contact = new Contact(contentValues);
 		contact.setId(id);
 		return contact;
 	}
 
-	private Cursor getContactFindCursor(String selection, String... args) {
+	public Cursor getContactReadCursor(String selection, String... args) {
 		return db.query(CONTACT_TABLE, ALL_FIELDS, selection, args, null, null, Contact.SORT_FIELD + " asc");
 	}
 
 	public Contact read(long id) {
-		Cursor cursor = getContactFindCursor(Contact.IDENTIFIER_STRING, new String[] { Long.toString(id) });
+		Cursor cursor = getContactReadCursor(Contact.IDENTIFIER_STRING, new String[] { Long.toString(id) });
 		return cursor.moveToFirst() ? new Contact(cursor) : null;
 	}
 
 	public Cursor readAll() {
-		return getContactFindCursor(null);
+		return getContactReadCursor(null);
 	}
 
-	public int update(Contact contact) {
-		return db.update(CONTACT_TABLE, contact.getContentValues(), Contact.IDENTIFIER_STRING,
-				contact.getIdentifyingValues());
+	public int update(ContentValues content, String selection, String... args) {
+		return db.update(CONTACT_TABLE, content, selection, args);
 	}
 
-	public int delete(Contact contact) {
-		return db.delete(CONTACT_TABLE, Contact.IDENTIFIER_STRING, contact.getIdentifyingValues());
+	public int update(ContentValues content) {
+		return update(content, Contact.IDENTIFIER_STRING, Contact.extractIdentifiers(content));
 	}
 
-	/** A helper class that creates/updgrades a database */
+	public int delete(String where, String... args) {
+		return db.delete(CONTACT_TABLE, where, args);
+	}
+
+	public int delete(long id) {
+		return delete(Contact.IDENTIFIER_STRING, new String[] { "" + id });
+	}
+
+	/** A helper class that creates/upgrades a database */
 	private class OpenHelper extends SQLiteOpenHelper {
+		private static final int VERSION_NO = 1;
 		private static final String DROP_TABLE = "drop table ";
 		private static final String CREATE_TABLE = "create table ";
 
 		public OpenHelper(Context context) {
-			super(context, DATABASE_IDENTIFIER, null, 1);
+			super(context, DATABASE_IDENTIFIER, null, VERSION_NO);
 		}
 
 		@Override

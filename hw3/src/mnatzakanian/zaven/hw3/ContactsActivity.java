@@ -1,95 +1,28 @@
 package mnatzakanian.zaven.hw3;
 
-import java.util.ArrayList;
-
-import mnatzakanian.zaven.hw3.beans.Contact;
-import android.app.ListActivity;
+import static android.widget.Toast.LENGTH_SHORT;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.CONTACT_PARAM;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.NEW_CONTACT_ID;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.editContact;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.extractIdFromActivity;
+import mnatzakanian.zaven.hw3.ContactListFragment.ContactSelectedListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class ContactsActivity extends ListActivity {
-	private static final int EDIT_CONTACT_REQUEST_ID = 41;
+public class ContactsActivity extends FragmentActivity implements ContactSelectedListener {
+	public static final int EDIT_CONTACT_REQUEST_ID = 41;
 
-	private static final int DISPLAY_CONTACT_REQUEST_ID = 40;
+	private DisplayContactFragment display;
 
-	public static final String CONTACT_PARAM = "contact";
-
-	private final ContactList contactList = new ContactList();
-
-	private class ContactList extends BaseAdapter {
-		public ArrayList<Contact> contacts = new ArrayList<Contact>();
-		
-		public int getCount() {
-			return contacts.size();
-		}
-
-		public Contact getItem(int arg0) {
-			return contacts.get(arg0);
-		}
-
-		public long getItemId(int arg0) {
-			return getItem(arg0).getId();
-		}
-
-		public View getView(int itemNum, View view, ViewGroup parentGroup) {
-			Contact contact = getItem(itemNum);
-			if (view == null) {
-				view = getLayoutInflater().inflate(R.layout.contact_entry, null);
-			}
-			TextView displayView = (TextView) view.findViewById(R.id.displayName);
-			TextView phoneView = (TextView) view.findViewById(R.id.phoneNumber);
-			displayView.setText(contact.getDisplayName());
-			phoneView.setText(contact.getMobilePhone());
-			return view;
-		}
-		
-		public boolean addContact(Contact contact) {
-			contact.setId(contacts.size());
-			boolean success = contacts.add(contact);
-			notifyDataSetChanged();
-			return success;
-		}
-
-		public void updateContact(Contact contact) {
-			long index = contact.getId();
-			if(index == 0)
-				
-				contacts.set((int) index, contact);
-				notifyDataSetChanged();
-		}
-	}
-
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setListAdapter(contactList);
-
-		//TODO: Load contacts
-		
-		if (contactList.isEmpty())
-			Toast.makeText(getApplicationContext(), R.string.empty_list_label, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.contact_list_menu, menu);
-		return true;
-	}
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Intent displayContact = new Intent("mnatzakanian.zaven.hw2.intents.viewContact");
-		displayContact.putExtra(CONTACT_PARAM, id);
-		startActivityForResult(displayContact, DISPLAY_CONTACT_REQUEST_ID);
+		setContentView(R.layout.list_fragment);
+		display = (DisplayContactFragment) getSupportFragmentManager().findFragmentById(R.id.display_fragment);
 	}
 
 	@Override
@@ -102,5 +35,41 @@ public class ContactsActivity extends ListActivity {
 		default:
 			return super.onMenuItemSelected(featureId, item);
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.contact_list_menu, menu);
+		return true;
+	}
+
+	public void onContactSelected(long id) {
+		if (display == null || !display.isInLayout()) {
+			Intent intent = new Intent(getApplicationContext(), DisplayContactActivity.class);
+			intent.putExtra(CONTACT_PARAM, id);
+			startActivity(intent);
+		} else {
+			getIntent().putExtra(CONTACT_PARAM, id);
+			display.refreshView();
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		long workingContactId = extractIdFromActivity(this);
+		switch (item.getItemId()) {
+		case R.id.editItem:
+			// Check if a contact has been selected, if not, do not continue
+			if (workingContactId == NEW_CONTACT_ID) {
+				Toast.makeText(getApplicationContext(), "No Contact is Selected", LENGTH_SHORT).show();
+				break;
+			}
+			// If selecting create item, do not need to validate that an item is
+			// selected
+		case R.id.createItem:
+			editContact(this, workingContactId);
+			return true; // Consume the menu item selected event
+		}
+		return false; // Allow others to consume the selection event
 	}
 }

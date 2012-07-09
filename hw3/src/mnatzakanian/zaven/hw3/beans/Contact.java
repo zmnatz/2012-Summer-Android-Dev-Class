@@ -1,9 +1,12 @@
 package mnatzakanian.zaven.hw3.beans;
 
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.NEW_CONTACT_ID;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import mnatzakanian.zaven.hw3.R;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -20,8 +23,11 @@ public class Contact implements Parcelable {
 	public static final String MOBILE_PHONE = "mobilePhone";
 	public static final String EMAIL_ADDRESS = "emailAddress";
 
-	public static final String[] ALL_FIELDS = new String[] { ID, DISPLAY_NAME, FIRST_NAME, LAST_NAME, BIRTHDAY, HOME_PHONE,
-			WORK_PHONE, MOBILE_PHONE, EMAIL_ADDRESS };
+	public static final String[] ALL_FIELDS = new String[] { ID, DISPLAY_NAME, FIRST_NAME, LAST_NAME, BIRTHDAY,
+			HOME_PHONE, WORK_PHONE, MOBILE_PHONE, EMAIL_ADDRESS };
+	public static final int[] RESOURCES = { R.id.id, R.id.displayName, R.id.firstName, R.id.lastName, R.id.birthday,
+			R.id.homeNumber, R.id.workNumber, R.id.mobileNumber, R.id.emailAddr };
+
 	public static final String IDENTIFIER_STRING = ID + "=?";
 	public static final String SORT_FIELD = DISPLAY_NAME;
 
@@ -36,10 +42,14 @@ public class Contact implements Parcelable {
 	private String mobilePhone;
 	private String emailAddress;
 
-	public Contact(long id, String displayName, String firstName, String lastName, Date birthday, String homePhone,
+	public Contact() {
+		this.id = -1;
+	}
+
+	public Contact(Long id, String displayName, String firstName, String lastName, Date birthday, String homePhone,
 			String workPhone, String mobilePhone, String emailAddress) {
 		super();
-		this.id = id;
+		this.id = id != null ? id : NEW_CONTACT_ID;
 		this.displayName = displayName;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -55,14 +65,10 @@ public class Contact implements Parcelable {
 				.getString(4)), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8));
 	}
 
-	public Contact() {
-
-	}
-
-	public Contact(long id, ContentValues values) {
-		this(id, values.getAsString(DISPLAY_NAME), values.getAsString(FIRST_NAME), values.getAsString(LAST_NAME),
-				parseDate(values.getAsString(BIRTHDAY)), values.getAsString(HOME_PHONE), values.getAsString(WORK_PHONE),
-				values.getAsString(MOBILE_PHONE), values.getAsString(EMAIL_ADDRESS));
+	public Contact(ContentValues values) {
+		this(values.getAsLong(ID), values.getAsString(DISPLAY_NAME), values.getAsString(FIRST_NAME), values
+				.getAsString(LAST_NAME), parseDate(values.getAsString(BIRTHDAY)), values.getAsString(HOME_PHONE),
+				values.getAsString(WORK_PHONE), values.getAsString(MOBILE_PHONE), values.getAsString(EMAIL_ADDRESS));
 	}
 
 	/**
@@ -73,8 +79,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param displayName
-	 *            the displayName to set
+	 * @param displayName the displayName to set
 	 */
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
@@ -88,8 +93,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param firstName
-	 *            the firstName to set
+	 * @param firstName the firstName to set
 	 */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -103,8 +107,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param lastName
-	 *            the lastName to set
+	 * @param lastName the lastName to set
 	 */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
@@ -118,8 +121,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param birthday
-	 *            the birthday to set
+	 * @param birthday the birthday to set
 	 */
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
@@ -137,8 +139,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param homePhone
-	 *            the homePhone to set
+	 * @param homePhone the homePhone to set
 	 */
 	public void setHomePhone(String homePhone) {
 		this.homePhone = homePhone;
@@ -152,8 +153,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param workPhone
-	 *            the workPhone to set
+	 * @param workPhone the workPhone to set
 	 */
 	public void setWorkPhone(String workPhone) {
 		this.workPhone = workPhone;
@@ -167,8 +167,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param mobilePhone
-	 *            the mobilePhone to set
+	 * @param mobilePhone the mobilePhone to set
 	 */
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
@@ -182,8 +181,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param emailAddress
-	 *            the emailAddress to set
+	 * @param emailAddress the emailAddress to set
 	 */
 	public void setEmailAddress(String emailAddress) {
 		this.emailAddress = emailAddress;
@@ -217,8 +215,7 @@ public class Contact implements Parcelable {
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param id the id to set
 	 */
 	public void setId(long id) {
 		this.id = id;
@@ -227,9 +224,11 @@ public class Contact implements Parcelable {
 	public static Date parseDate(String dateString) {
 		Date birthday = null;
 		try {
-			birthday = dateString.length() > 0 ? FORMATTER.parse(dateString) : null;
+			birthday = FORMATTER.parse(dateString);
 		} catch (ParseException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// Date is null
 		}
 		return birthday;
 	}
@@ -254,13 +253,14 @@ public class Contact implements Parcelable {
 		}
 	};
 
-	public String[] getIdentifyingValues() {
-		return new String[] { Long.toString(id) };
+	public static String[] extractIdentifiers(ContentValues content) {
+		Long id = content.getAsLong(ID);
+		String[] args = new String[] { id == null ? null : Long.toString(id) };
+		return args;
 	}
 
 	public ContentValues getContentValues() {
 		ContentValues content = new ContentValues();
-		content.put(ID, id);
 		content.put(DISPLAY_NAME, displayName);
 		content.put(FIRST_NAME, firstName);
 		content.put(LAST_NAME, lastName);

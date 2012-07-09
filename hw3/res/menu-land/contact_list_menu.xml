@@ -4,5 +4,7 @@
     <item
         android:id="@+id/createItem"
         android:title="@string/create_contact_label"/>
-
-</menu>
+    <item
+        android:id="@+id/editItem"
+        android:title="@string/edit_contact_label"/>
+</menu>

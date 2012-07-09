@@ -1,18 +1,22 @@
 package mnatzakanian.zaven.hw3;
 
-import static mnatzakanian.zaven.hw3.ContactsActivity.CONTACT_PARAM;
 import static mnatzakanian.zaven.hw3.beans.Contact.FORMATTER;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.CONTACT_PARAM;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.NEW_CONTACT_ID;
+import static mnatzakanian.zaven.hw3.utils.ContactHelpers.loadContact;
 
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
 import mnatzakanian.zaven.hw3.beans.Contact;
+import mnatzakanian.zaven.hw3.provider.ContactListProvider;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
-import android.content.Intent;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,7 +27,6 @@ import android.widget.TextView;
 
 public class EditContactActivity extends Activity {
 	private static final int BIRTHDAY_PICKER_ID = 0;
-
 	private Contact workingContact;
 
 	private EditText mobileNumber;
@@ -45,19 +48,16 @@ public class EditContactActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.contact_edit);
+		setContentView(R.layout.edit);
 
 		initializeFormElements();
 
-		if (savedInstanceState != null)
-			workingContact = savedInstanceState.getParcelable(CONTACT_PARAM);
-		else if (getIntent().hasExtra(CONTACT_PARAM)) {
-			workingContact = new Contact();
-			//TODO: Load Contact from ID
-		} else
-			workingContact = new Contact();
-
-		displayContact(workingContact);
+		// Need to check saveInstanceState in case the display is rotated
+		if (savedInstanceState != null) {
+			refreshView((Contact) savedInstanceState.getParcelable(CONTACT_PARAM));
+		} else {
+			refreshView();
+		}
 	}
 
 	/**
@@ -80,15 +80,14 @@ public class EditContactActivity extends Activity {
 
 		// Setup Buttons
 		Button save = (Button) findViewById(R.id.submitButton);
+		Button cancel = (Button) findViewById(R.id.cancelButton);
+
 		save.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Intent results = new Intent();
-				results.putExtra(CONTACT_PARAM, saveContact());
-				setResult(RESULT_OK, results);
+				saveContact();
 				finish();
 			}
 		});
-		Button cancel = (Button) findViewById(R.id.cancelButton);
 		cancel.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				setResult(RESULT_CANCELED);
@@ -97,7 +96,15 @@ public class EditContactActivity extends Activity {
 		});
 	}
 
-	private void displayContact(Contact contact) {
+	private void refreshView() {
+		Contact contact = loadContact(this);
+		if (contact == null)
+			contact = new Contact();
+		refreshView(contact);
+	}
+
+	private void refreshView(Contact contact) {
+		workingContact = contact;
 		firstName.setText(contact.getFirstName());
 		lastName.setText(contact.getLastName());
 		displayName.setText(contact.getDisplayName());
@@ -119,8 +126,10 @@ public class EditContactActivity extends Activity {
 
 	/**
 	 * Save form data to the contact object
+	 * 
+	 * @return Contact object
 	 */
-	private long saveContact() {
+	private Contact saveContact() {
 		workingContact.setFirstName(firstName.getText().toString());
 		workingContact.setLastName(lastName.getText().toString());
 		workingContact.setDisplayName(displayName.getText().toString());
@@ -134,7 +143,18 @@ public class EditContactActivity extends Activity {
 		workingContact.setHomePhone(homeNumber.getText().toString());
 		workingContact.setWorkPhone(workNumber.getText().toString());
 		workingContact.setEmailAddress(emailAddr.getText().toString());
-		return workingContact.getId();
+
+		// Commit Working Contact to the Database
+		ContentValues contentValues = workingContact.getContentValues();
+		long id = workingContact.getId();
+		if (id == NEW_CONTACT_ID) {
+			getContentResolver().insert(ContactListProvider.CONTENT_URI, contentValues);
+		} else {
+			Uri uri = Uri.withAppendedPath(ContactListProvider.CONTENT_URI, id + "");
+			getContentResolver().update(uri, contentValues, null, null);
+		}
+		// End of commit
+		return workingContact;
 	}
 
 	// Code Source: Android Developer Guide (developer.android.com)
