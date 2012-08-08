@@ -74,12 +74,23 @@ public class AsteroidActivity extends CameraActivity {
 		return super.onTouchEvent(event);
 	}
 
+	/**
+	 * Restart the game by reseting lives and score
+	 */
 	private void restartGame() {
 		asteroidsToClean.addAll(asteroids);
 		lives = STARTING_LIVES;
 		score = 0;
 	}
 
+	/**
+	 * Destroy the given asteroid. If the destruction is a result of hitting the
+	 * user, subtract a life. Otherwise, add one to the score
+	 * 
+	 * @param hit True if the destruction is a result of getting hit. False if
+	 *            its a result of shooting it
+	 * @param asteroid Asteroid to destroy
+	 */
 	protected void destroyAsteroid(boolean hit, Asteroid asteroid) {
 		if (!asteroidsToClean.contains(asteroid) && isAlive()) {
 			asteroidsToClean.add(asteroid);
@@ -88,10 +99,16 @@ public class AsteroidActivity extends CameraActivity {
 			} else {
 				score++;
 			}
-			getVibrator().vibrate(250);
+			getVibrator().vibrate(400);
 		}
 	}
 
+	/**
+	 * Fire weapons and destroy asteroids if possible
+	 * 
+	 * @param x X coordinate on the screen
+	 * @param y Y coordinate on the screen
+	 */
 	private void fireWeapons(float x, float y) {
 		if (shot == null) {
 			shot = new float[] { x, y };
@@ -102,6 +119,9 @@ public class AsteroidActivity extends CameraActivity {
 		}
 	}
 
+	/**
+	 * @return True if the user has lives left, false otherwise
+	 */
 	private boolean isAlive() {
 		return lives > 0;
 	}
@@ -148,6 +168,11 @@ public class AsteroidActivity extends CameraActivity {
 			drawShot(canvas);
 		}
 
+		/**
+		 * Draw the HUD, score, lives, etc...
+		 * 
+		 * @param canvas Canvas to draw them on
+		 */
 		private void drawHUD(Canvas canvas) {
 			if (isAlive()) {
 				canvas.drawText(Integer.toString(score), getWidth() - HUD_OFFSET, HUD_OFFSET, getGreen());
@@ -163,6 +188,11 @@ public class AsteroidActivity extends CameraActivity {
 			}
 		}
 
+		/**
+		 * Draw asteroids on the screen if visible, indicators otherwise
+		 * 
+		 * @param canvas Canvas to draw them on
+		 */
 		private synchronized void drawAsteroids(Canvas canvas) {
 			asteroids.removeAll(asteroidsToClean);
 			asteroidsToClean.clear();
@@ -224,14 +254,33 @@ public class AsteroidActivity extends CameraActivity {
 		}
 
 		/** Utility Methods for Drawing asteroids **/
+
+		/**
+		 * Determines if the coordinate is closer to the left of the screen
+		 * 
+		 * @param x X coordinate, in pixels, converted from degrees
+		 * @return Returns true if the coordinate is offscreen to the left
+		 */
 		private boolean isToLeft(float x) {
 			return directlyBehindInPixels < x || x < 0;
 		}
 
+		/**
+		 * Determines if the coordinate is closer to the left of the screen
+		 * 
+		 * @param x X coordinate, in pixels, converted from degrees
+		 * @return Returns true if the coordinate is offscreen to the right
+		 */
 		private boolean isToRight(float x) {
 			return getWidth() < x && x < directlyBehindInPixels;
 		}
 
+		/**
+		 * Convert the given position to coordinates.
+		 * 
+		 * @param position Poisition (out of 360 degrees)
+		 * @return the given position as it relates to pixels on the screen.
+		 */
 		private float convertToPixels(float position) {
 			int left = getLeftBoundary();
 			int right = getRightBoundary();
